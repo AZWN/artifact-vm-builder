@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -eu
+
+cores=$(nproc)
+memsize=4G
+
+## start system
+case `uname` in
+ 'Darwin')
+   accel=hvf
+   ;;
+ 'Linux')
+   accel=kvm
+   ;;
+  *)
+    echo "WARNING: Cannot determine fast acceleration method, defaulting to slow Tiny Code Generator."
+    accel=tcg
+    ;;
+esac
+qemu-system-x86_64 \
+    -accel $accel \
+    -cpu max \
+    -smp $cores \
+    -m $memsize \
+    -vga std \
+    -device e1000,netdev=net0 \
+    -netdev user,id=net0 \
+    -hda box.img

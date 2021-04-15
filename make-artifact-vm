@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -eu
+
+netboot=debian-10-netboot
+hostnet=10.0.2.0/24
+hostaddr=10.0.2.2 # used in $netboot/pxelinux.cfg/default
+target=artifact-vm
+memsize=2G
+imgsize=4G
+
+## create target directory
+if [ -e $target ]; then
+    echo "Target directory $target already exists."
+    exit 1
+fi
+mkdir -p "$target"
+
+## create disk image
+img="$target/box.img"
+qemu-img create -f qcow2 "$img" $imgsize
+
+## create disk image
+cp bin/* "$target/"
+
+## start system
+case `uname` in
+ 'Darwin')
+   accel=hvf
+   ;;
+ 'Linux')
+   accel=kvm
+   ;;
+  *)
+    echo "WARNING: Cannot determine fast acceleration method, defaulting to slow Tiny Code Generator."
+    accel=tcg
+    ;;
+esac
+qemu-system-x86_64 \
+    -accel $accel \
+    -cpu max \
+    -m $memsize \
+    -vga std \
+    -device e1000,netdev=eth0 \
+    -netdev user,id=eth0,net="$hostnet",host="$hostaddr",tftp="$netboot",bootfile=pxelinux.0 \
+    -hda "$img"

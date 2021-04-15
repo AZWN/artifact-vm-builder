@@ -1,0 +1,4 @@
+default install
+label install
+  kernel linux
+  append initrd=initrd.gz auto=true hostname=artifact domain=artifact preseed/url=tftp://10.0.2.2/preseed.cfg --- quiet
