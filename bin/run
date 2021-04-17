@@ -2,8 +2,12 @@
 
 set -eu
 
+here=$(dirname $0)
+
+hostnet=10.0.2.0/24
+hostaddr=10.0.2.2
 cores=$(nproc)
-memsize=4G
+memsize=${MAXMEM:-4G}
 
 ## start system
 case `uname` in
@@ -25,5 +29,5 @@ qemu-system-x86_64 \
     -m $memsize \
     -vga std \
     -device e1000,netdev=net0 \
-    -netdev user,id=net0 \
-    -hda box.img
+    -netdev user,id=eth0,net="$hostnet",host="$hostaddr" \
+    -hda "$here/box.img"

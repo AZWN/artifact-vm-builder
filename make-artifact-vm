@@ -2,14 +2,20 @@
 
 set -eu
 
-netboot=debian-10-netboot
+here=$(dirname $0)
+
 hostnet=10.0.2.0/24
-hostaddr=10.0.2.2 # used in $netboot/pxelinux.cfg/default
-target=artifact-vm
+hostaddr=10.0.2.2 # used in netboot/pxelinux.cfg/default
 memsize=2G
 imgsize=4G
 
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 TARGETDIR"
+fi
+target=$1
+
 ## create target directory
+echo "Create target directory"
 if [ -e $target ]; then
     echo "Target directory $target already exists."
     exit 1
@@ -17,13 +23,14 @@ fi
 mkdir -p "$target"
 
 ## create disk image
+echo "Create disk image"
 img="$target/box.img"
 qemu-img create -f qcow2 "$img" $imgsize
 
 ## create disk image
-cp bin/* "$target/"
+cp "$here/bin/*" "$target/"
 
-## start system
+## install system
 case `uname` in
  'Darwin')
    accel=hvf
@@ -36,6 +43,8 @@ case `uname` in
     accel=tcg
     ;;
 esac
+echo "Running VM for installation (shutdown when done)"
+netboot="$here/debian-10-netboot"
 qemu-system-x86_64 \
     -accel $accel \
     -cpu max \
