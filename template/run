@@ -30,4 +30,4 @@ qemu-system-x86_64 \
     -vga std \
     -device e1000,netdev=net0 \
     -netdev user,id=eth0,net="$hostnet",host="$hostaddr" \
-    -hda "$here/box.img"
+    -hda "$here/artifact-hd.vmdk"

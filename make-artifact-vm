@@ -20,12 +20,13 @@ if [ -e $target ]; then
     echo "Target directory $target already exists."
     exit 1
 fi
-mkdir -p "$target"
+mkdir -p "$(dirname $target)"
+cp -r "$here/template" "$target"
 
 ## create disk image
 echo "Create disk image"
-img="$target/box.img"
-qemu-img create -f qcow2 "$img" $imgsize
+img="$target/box.vmdk"
+qemu-img create -f vmdk "$img" $imgsize
 
 ## create disk image
 cp "$here/bin/*" "$target/"
