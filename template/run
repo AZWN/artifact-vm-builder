@@ -29,5 +29,5 @@ qemu-system-x86_64 \
     -m $memsize \
     -vga std \
     -device e1000,netdev=net0 \
-    -netdev user,id=eth0,net="$hostnet",host="$hostaddr" \
+    -netdev user,id=net0,net="$hostnet",host="$hostaddr" \
     -hda "$here/artifact-hd.vmdk"
