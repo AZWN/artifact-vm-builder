@@ -25,11 +25,8 @@ cp -r "$here/template" "$target"
 
 ## create disk image
 echo "Create disk image"
-img="$target/box.vmdk"
+img="$target/artifact-hd.vmdk"
 qemu-img create -f vmdk "$img" $imgsize
-
-## create disk image
-cp "$here/bin/*" "$target/"
 
 ## install system
 case `uname` in
